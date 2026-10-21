@@ -25,7 +25,7 @@ function renderWeather() {
  labels.forEach(label => {
   label.textContent = `${date} \\ ${time}${weather ? ` \\ ${weather}` : ''}`;
   label.title = `${location?.name || 'Choose location'} · Change weather location`;
-  label.setAttribute('aria-label',`${location?.name || 'Local weather'}, ${date}, ${time}, ${weather}. Change location`);
+  label.setAttribute('aria-label',[location?.name||'Local time',date,time,weather].filter(Boolean).join(', ')+'. Change location');
  });
  document.querySelector('#weather-current').textContent = location ? `${location.name} · ${temperature === null ? weatherState : `${temperature}°C`}` : weatherState;
 }

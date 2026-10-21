@@ -77,7 +77,7 @@ offerings.forEach(item => {
   }
  });
 });
-const projects=[['69%','To transition to a more stable, reliable<br>and sustainable energy supply.','As the world decarbonizes, the energy transition is on. It needs smarter,<br> more efficient and sustainable infrastructure.'],['84%','Every drop matters.<br>Every acre has potential.','Precision irrigation puts water exactly where it is needed,<br> helping growers do more with less.'],['92%','A connected view.<br>A more productive tomorrow.','From the field to your fingertips, our technology connects<br> people, resources and possibilities.'],['33%','Growing a future<br>that works for everyone.','Sustainable solutions engineered for lasting impact.<br> Better for growers. Better for our planet.']];
+const projects=[['69%','To transition to a more stable, reliable<br> and sustainable energy supply.','As the world decarbonizes, the energy transition is on. It needs smarter,<br>  more efficient and sustainable infrastructure.'],['84%','Every drop matters.<br> Every acre has potential.','Precision irrigation puts water exactly where it is needed,<br>  helping growers do more with less.'],['92%','A connected view.<br> A more productive tomorrow.','From the field to your fingertips, our technology connects<br>  people, resources and possibilities.'],['33%','Growing a future<br> that works for everyone.','Sustainable solutions engineered for lasting impact.<br>  Better for growers. Better for our planet.']];
 const projectSection=document.querySelector('.project');
 const projectImages=['/images/solar.webp','/images/project-irrigation.webp','/images/project-connected.webp','/images/project-wind.webp'];
 const projectLabels=['Infrastructure','Precision irrigation','Connected agriculture','Sustainable futures'];
