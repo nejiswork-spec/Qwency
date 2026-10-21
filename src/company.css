@@ -11,7 +11,7 @@
 .company-hero-bottom>a:hover span{transform:translateY(5px)}
 .company-overview{padding:110px 4vw;display:grid;grid-template-columns:30% 70%;gap:0}
 .company-overview h2,.company-values h2{font-size:clamp(35px,4.4vw,78px);line-height:1.08;letter-spacing:-.055em}
-.company-overview>div>p,.company-values>div>p{max-width:650px;font-size:17px;color:#777;line-height:1.6;margin-top:30px}
+.company-overview>div>p,.company-values>div>p{max-width:650px;font-size:17px;color:#707070;line-height:1.6;margin-top:30px}
 .company-stories{padding:0 4vw}
 .company-story{display:grid;grid-template-columns:1fr 1fr;gap:7vw;padding:70px 0;border-top:1px solid #ddd;align-items:center}
 .company-story:nth-child(even) .company-story-photo{order:2}
@@ -19,9 +19,9 @@
 .company-story-photo img{width:100%;height:100%;object-fit:cover;transition:transform .85s cubic-bezier(.22,1,.36,1)}
 @media(hover:hover) and (prefers-reduced-motion:no-preference){.company-story-photo:hover img{transform:scale(1.045)}}
 .company-story-copy h2{font-size:clamp(30px,3.6vw,62px);line-height:1.08;margin-top:25px;margin-bottom:25px;letter-spacing:-.055em}
-.company-story-copy>p:not(.company-kicker){color:#777;font-size:16px;max-width:530px;line-height:1.65}
+.company-story-copy>p:not(.company-kicker){color:#707070;font-size:16px;max-width:530px;line-height:1.65}
 .company-tags{display:flex;flex-wrap:wrap;gap:8px;margin:28px 0 35px}
-.company-tags span{font-size:10px;color:#777;border:1px solid #ddd;border-radius:25px;padding:7px 12px}
+.company-tags span{font-size:10px;color:#707070;border:1px solid #ddd;border-radius:25px;padding:7px 12px}
 .company-text-link{display:inline-flex;align-items:center;gap:18px;font-size:13px;border-bottom:1px solid #aaa;padding-bottom:8px;transition:color .35s,border-color .35s}
 .company-text-link span{transition:transform .4s}.company-text-link:hover{color:#527cda;border-color:#527cda}.company-text-link:hover span{transform:translate(3px,-3px)}
 .company-values{padding:100px 4vw;display:grid;grid-template-columns:30% 70%;background:#f5f7f9;margin:30px 0}
@@ -59,3 +59,4 @@
 .page-projects .company-overview>div{max-width:1200px;margin-inline:auto}
 .page-projects .company-overview>div>p{margin-left:auto;margin-right:auto}
 @media(max-width:760px){.page-projects .company-overview{padding-left:24px;padding-right:24px}}
+.sitemap-group .sitemap-number{color:#707070}

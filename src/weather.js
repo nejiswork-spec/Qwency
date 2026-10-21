@@ -8,7 +8,6 @@ let locationVersion = 0;
 const storageKey = 'gwency-weather-city-v1';
 const validLocation = value => value && Number.isFinite(value.latitude) && Math.abs(value.latitude) <= 90 && Number.isFinite(value.longitude) && Math.abs(value.longitude) <= 180 && typeof value.name === 'string';
 const timezoneIsValid = value => { try { new Intl.DateTimeFormat('en', { timeZone: value }).format(); return !!value; } catch { return false; } };
-const readStorage = () => { try { return JSON.parse(localStorage.getItem(storageKey)); } catch { return null; } };
 function storeCity(value) { try { value ? localStorage.setItem(storageKey, JSON.stringify(value)) : localStorage.removeItem(storageKey); } catch {} }
 async function requestJSON(url, signal) {
  const response = await fetch(url, { signal: signal || AbortSignal.timeout(10000) });
@@ -49,7 +48,7 @@ async function refreshWeather() {
   temperature = null; weatherState = 'Weather unavailable';
  } finally { clearTimeout(timeout); if (selected === location) renderWeather(); }
 }
-function selectLocation(value, save = false) {
+function selectLocation(value) {
  if (!validLocation(value)) throw new Error('Invalid location');
  location = {...value, timezone:timezoneIsValid(value.timezone)?value.timezone:browserTimezone};
  temperature = null; weatherState = 'Loading weather…';
@@ -60,7 +59,9 @@ async function detectLocation() {
  const version = ++locationVersion;
  status.textContent = 'Detecting your approximate city…';
  try {
-  const data = await requestJSON('https://ipapi.co/json/');
+  let data;
+  try{const cached=JSON.parse(sessionStorage.getItem('gwency-ip-location'));if(cached&&Date.now()-cached.savedAt<3600000)data=cached.data}catch{}
+  if(!data){data=await requestJSON('https://ipapi.co/json/');if(!data.error){try{sessionStorage.setItem('gwency-ip-location',JSON.stringify({savedAt:Date.now(),data:{latitude:data.latitude,longitude:data.longitude,city:data.city,country_name:data.country_name,timezone:data.timezone}}))}catch{}}}
   if (version !== locationVersion) return;
   if (data.error || !data.city) throw new Error('Location unavailable');
   selectLocation({latitude:data.latitude,longitude:data.longitude,name:[data.city,data.country_name].filter(Boolean).join(', '),timezone:data.timezone});
@@ -72,9 +73,9 @@ async function detectLocation() {
  }
 }
 const panel = document.createElement('dialog');
-panel.id = 'weather-dialog';
+panel.id = 'weather-dialog';panel.setAttribute('data-lenis-prevent','');
 panel.setAttribute('aria-labelledby','weather-heading');
-panel.innerHTML = `<button class="weather-close" aria-label="Close location settings">×</button><h2 id="weather-heading">Your local weather.</h2><p id="weather-current" aria-live="polite"></p><div class="weather-actions"><button id="weather-precise">Use my current location ↗</button><button id="weather-auto">Auto-detect city</button></div><form id="weather-city-form"><label for="weather-city">Or choose a city</label><div class="weather-search-row"><input id="weather-city" placeholder="City name" required minlength="2" autocomplete="off"/><button type="submit">Search</button></div></form><p id="weather-status" role="status"></p><div id="weather-cities"></div><p class="weather-note">Automatic detection uses your IP address. Precise location asks for permission and is sent to Open-Meteo for weather. Your current location is the default. You can choose another city for this visit.</p>`;
+panel.innerHTML = `<button class="weather-close" aria-label="Close location settings">×</button><h2 id="weather-heading">Your local weather.</h2><p id="weather-current" aria-live="polite"></p><div class="weather-actions"><button id="weather-precise">Use my current location ↗</button><button id="weather-auto">Auto-detect city</button></div><form id="weather-city-form"><label for="weather-city">Or choose a city</label><div class="weather-search-row"><input id="weather-city" placeholder="City name" required minlength="2" autocomplete="off"/><button type="submit">Search</button></div></form><p id="weather-status" role="status"></p><div id="weather-cities"></div><p class="weather-note">Automatic detection uses your IP address. Precise location asks for permission and is sent to Open-Meteo for weather. Your approximate city is used by default. Precise location is used automatically only after you grant permission. You can choose another city for this visit.</p>`;
 document.body.append(panel);
 const status = panel.querySelector('#weather-status');
 const cityInput = panel.querySelector('#weather-city');
@@ -122,7 +123,13 @@ panel.querySelector('#weather-city-form').addEventListener('submit',async event=
 });
 renderWeather();
 storeCity(null);
-useCurrentLocation();
-setInterval(renderWeather,1000);
+// Use precise location silently only when the visitor has already granted access.
+// Otherwise start with approximate city weather and ask only after a button click.
+async function initializeLocation(){
+ try{const permission=await navigator.permissions?.query({name:'geolocation'});if(permission?.state==='granted'){useCurrentLocation();return;}}catch{}
+ detectLocation();
+}
+if('requestIdleCallback' in window)requestIdleCallback(initializeLocation,{timeout:2000});else setTimeout(initializeLocation,500);
+setInterval(renderWeather,30000);
 setInterval(refreshWeather,15*60*1000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){renderWeather();refreshWeather();}});

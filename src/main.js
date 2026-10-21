@@ -3,8 +3,6 @@ import './style.css';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
-import { createIcons, Search, Leaf, Droplet } from 'lucide';
-createIcons({icons:{Search,Leaf,Droplet}});
 gsap.registerPlugin(ScrollTrigger);
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const lenis = new Lenis({duration:1.25,smoothWheel:!reduced,anchors:true});
@@ -13,8 +11,8 @@ gsap.ticker.add(time=>lenis.raf(time*1000));
 gsap.ticker.lagSmoothing(0);
 setupBackToTop(lenis);
 if(!reduced){
- gsap.from('.wordmark',{yPercent:100,opacity:0,duration:1.6,ease:'power3.out',delay:.15});
- gsap.from('.topbar',{opacity:0,y:16,duration:1,delay:.4});
+ gsap.from('.wordmark',{y:35,duration:.9,ease:'power3.out'});
+ gsap.from('.topbar',{y:8,duration:.6});
  const hero = gsap.timeline({scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:1}});
  hero.to('.hero-image',{yPercent:22,scale:1.14,ease:'none'},0).to('.wordmark',{yPercent:65,scale:.92,opacity:0,ease:'none'},0);
  gsap.to('.marquee h2',{xPercent:-14,ease:'none',scrollTrigger:{trigger:'.metrics',start:'top bottom',end:'bottom top',scrub:1}});
@@ -30,7 +28,7 @@ if(!reduced){
    });node.replaceWith(fragment);
   });
   const words=heading.querySelectorAll('.reveal-word');
-  gsap.fromTo(words,{color:'#c9c9c9'},{color:'#171719',stagger:.12,ease:'none',scrollTrigger:{trigger:heading,start:'top 86%',end:'bottom 48%',scrub:.6}});
+  gsap.fromTo(words,{color:'#858585'},{color:'#171719',stagger:.12,ease:'none',scrollTrigger:{trigger:heading,start:'top 86%',end:'bottom 48%',scrub:.6}});
  });
  gsap.from('.metric',{y:65,opacity:0,duration:.9,stagger:.14,ease:'power3.out',scrollTrigger:{trigger:'.metric-grid',start:'top 85%',once:true}});
  gsap.to('.project-image',{yPercent:12,ease:'none',scrollTrigger:{trigger:'.project',start:'top bottom',end:'bottom top',scrub:1}});
@@ -81,20 +79,21 @@ offerings.forEach(item => {
 });
 const projects=[['69%','To transition to a more stable, reliable<br>and sustainable energy supply.','As the world decarbonizes, the energy transition is on. It needs smarter,<br> more efficient and sustainable infrastructure.'],['84%','Every drop matters.<br>Every acre has potential.','Precision irrigation puts water exactly where it is needed,<br> helping growers do more with less.'],['92%','A connected view.<br>A more productive tomorrow.','From the field to your fingertips, our technology connects<br> people, resources and possibilities.'],['33%','Growing a future<br>that works for everyone.','Sustainable solutions engineered for lasting impact.<br> Better for growers. Better for our planet.']];
 const projectSection=document.querySelector('.project');
-const projectImages=['/images/solar.png','/images/project-irrigation.png','/images/project-connected.png','/images/project-wind.png'];
+const projectImages=['/images/solar.webp','/images/project-irrigation.webp','/images/project-connected.webp','/images/project-wind.webp'];
 const projectLabels=['Infrastructure','Precision irrigation','Connected agriculture','Sustainable futures'];
 const projectAlts=['Solar panel mounted above agricultural land','Center pivot irrigation watering a green field','Farmer checking crop data in the field','Wind turbines across rolling farmland'];
 const imageStage=document.querySelector('.project-image');
 imageStage.style.backgroundImage='none';
 const layers=projectImages.map((src,i)=>{
- const image=document.createElement('img');image.className='project-slide-image';image.src=src;image.alt=projectAlts[i];image.style.opacity=i===0?1:0;imageStage.append(image);return image;
+ const image=document.createElement('img');image.className='project-slide-image';image.dataset.src=src;image.dataset.srcset=`${src.replace('.webp','-768.webp')} 768w, ${src} 1600w`;image.sizes='100vw';image.alt=projectAlts[i];image.loading='lazy';image.decoding='async';image.width=1600;image.height=1000;image.style.opacity=i===0?1:0;imageStage.append(image);return image;
 });
+const imageObserver=new IntersectionObserver(entries=>{if(entries[0].isIntersecting){layers.forEach(image=>{image.srcset=image.dataset.srcset;image.src=image.dataset.src;});imageObserver.disconnect();}},{rootMargin:'600px'});imageObserver.observe(projectSection);
 const projectButtons=[...document.querySelectorAll('.project-controls button')];
 projectButtons.forEach(button=>{button.innerHTML='<span class="project-progress"></span>';button.title=button.getAttribute('aria-label');});
-const pauseButton=document.createElement('button');pauseButton.className='project-pause';pauseButton.textContent='Ⅱ';pauseButton.setAttribute('aria-label','Pause project slideshow');
+const pauseButton=document.createElement('button');pauseButton.className='project-pause sr-only-focusable';pauseButton.textContent='Pause slideshow';pauseButton.setAttribute('aria-label','Pause project slideshow');projectSection.append(pauseButton);
 let slideIndex=0, inView=false, userPaused=false, progressTween;
 function syncPlayback(){
- const running=inView&&!document.hidden&&!userPaused;
+ const running=inView&&!document.hidden&&!userPaused&&!reduced&&!projectSection.matches(':hover')&&!projectSection.contains(document.activeElement);
  if(progressTween)running?progressTween.play():progressTween.pause();
 }
 function playProject(index,immediate=false){
@@ -114,13 +113,23 @@ function playProject(index,immediate=false){
  syncPlayback();
 }
 projectButtons.forEach((button,i)=>button.addEventListener('click',()=>playProject(i)));
-pauseButton.addEventListener('click',()=>{userPaused=!userPaused;pauseButton.textContent=userPaused?'▷':'Ⅱ';pauseButton.setAttribute('aria-label',userPaused?'Play project slideshow':'Pause project slideshow');syncPlayback()});
+pauseButton.addEventListener('click',()=>{userPaused=!userPaused;pauseButton.textContent=userPaused?'Play slideshow':'Pause slideshow';pauseButton.setAttribute('aria-label',userPaused?'Play project slideshow':'Pause project slideshow');syncPlayback()});
 new IntersectionObserver(entries=>{inView=entries[0].isIntersecting;syncPlayback()},{threshold:.2}).observe(projectSection);
 document.addEventListener('visibilitychange',syncPlayback);
+['pointerenter','pointerleave','focusin'].forEach(event=>projectSection.addEventListener(event,syncPlayback));
+projectSection.addEventListener('focusout',()=>requestAnimationFrame(syncPlayback));
 playProject(0,true);
 const cards=[['Megawatt Capacity','Intelligent control systems bring dependable energy to every corner of your operation.'],['Increasing Productivity','Real-time insights help growers make precise decisions and get more from every acre.'],['Solar Panel Service','Expert installation and maintenance keep clean energy working at its best.'],['Hectar Area','A complete view of your land, with connected intelligence at every scale.'],['A Responsible Corporate','Our people are committed to safer operations and a more sustainable future.']];
 const grid=document.querySelector('.collection-grid');
-cards.forEach(([title,description],i)=>{const button=document.createElement('button');button.className='collection-card';button.setAttribute('aria-expanded','false');button.innerHTML=`<div class="photo-wrap"><div class="collection-photo" role="img" aria-label="${title}" style="background-position:${i*25}% center"></div></div><div class="collection-caption"><p>${title}</p><span aria-hidden="true">↗</span></div>`;button.addEventListener('click',()=>{const selected=button.classList.contains('selected');grid.querySelector('.collection-detail')?.remove();grid.querySelectorAll('button').forEach(b=>{b.classList.remove('selected');b.setAttribute('aria-expanded','false')});if(!selected){button.classList.add('selected');button.setAttribute('aria-expanded','true');const detail=document.createElement('div');detail.className='collection-detail';detail.textContent=description;grid.append(detail)}ScrollTrigger.refresh()});grid.append(button)});
+cards.forEach(([title,description],i)=>{
+ const button=grid.querySelectorAll('.collection-card')[i];
+ button.addEventListener('click',()=>{
+  const selected=button.classList.contains('selected');const detail=grid.querySelector('.collection-detail');detail.hidden=true;detail.textContent='';
+  grid.querySelectorAll('button').forEach(b=>{b.classList.remove('selected');b.setAttribute('aria-expanded','false')});
+  if(!selected){button.classList.add('selected');button.setAttribute('aria-expanded','true');detail.hidden=false;detail.textContent=description;}
+  ScrollTrigger.refresh();
+ });
+});
 const dialog=document.querySelector('#search-dialog');const input=document.querySelector('#search-input');
 const destinations=[['Home','/'],['Solutions — precision agriculture','/solutions/'],['Projects — ideas in the field','/projects/'],['Services — planning and support','/services/'],['About Gwency','/about/'],['Sitemap','/sitemap/']];
 function search(){
@@ -142,7 +151,7 @@ dialog.addEventListener('cancel',event=>{event.preventDefault();closeSearch()});
 dialog.querySelector('form').addEventListener('submit',event=>{event.preventDefault();closeSearch()});
 input.addEventListener('input',search);
 document.querySelector('#search-results').addEventListener('click',event=>{
- const link=event.target.closest('a');if(!link)return;event.preventDefault();
+ const link=event.target.closest('a');if(!link||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;event.preventDefault();
  const target=link.getAttribute('href');closeSearch(()=>{if(target.startsWith('#')){lenis.scrollTo(target);history.replaceState(null,'',target)}else{location.assign(target)}});
 });
 window.addEventListener('load',()=>ScrollTrigger.refresh());
