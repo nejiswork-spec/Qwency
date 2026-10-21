@@ -54,3 +54,8 @@
 .sitemap-group a>span:last-child{margin-left:auto;color:#999;transition:translate .45s ease,color .4s}
 .sitemap-group a:hover{color:#527cda}.sitemap-group a:hover>span:nth-child(2){translate:4px 0}.sitemap-group a:hover>span:last-child{translate:2px -2px;color:#527cda}
 @media(max-width:760px){.sitemap-index{grid-template-columns:1fr;gap:40px;padding:0 24px 65px}.sitemap-group h2{font-size:25px;margin-bottom:20px}.footer-sitemap{font-size:10px}}
+/* Center the Projects introduction at every viewport size. */
+.page-projects .company-overview{padding-left:4vw;padding-right:4vw;text-align:center}
+.page-projects .company-overview>div{max-width:1200px;margin-inline:auto}
+.page-projects .company-overview>div>p{margin-left:auto;margin-right:auto}
+@media(max-width:760px){.page-projects .company-overview{padding-left:24px;padding-right:24px}}
