@@ -39,3 +39,6 @@ Production: https://qwency-ten.vercel.app
 Vercel serves `dist/`. `vercel.json` defines CSP, HSTS, anti-framing, MIME-sniffing protection, referrer and permissions policies, and cache rules. JavaScript source maps are disabled; JavaScript, CSS and HTML are minified. No credentials belong in the public assets or frontend code. Browser-delivered code remains inspectable; minification is not a secrecy boundary.
 
 Deployments are connected to `main`. Review the CI results and deployment checks after pushing changes. Automated audits do not prove that every possible vulnerability or accessibility issue is absent.
+
+CI uses the median of three Lighthouse runs per page to reduce performance noise and publishes score annotations for diagnostics.
+

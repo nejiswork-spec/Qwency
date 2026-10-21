@@ -58,4 +58,3 @@ for(const page of Object.keys(companyPages)){
 await fs.writeFile('public/robots.txt',`User-agent: *\nAllow: /\nSitemap: ${origin}/sitemap.xml\n`);
 await fs.writeFile('public/sitemap.xml',`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${['/',...Object.keys(companyPages).map(page=>`/${page}/`)].map(path=>`<url><loc>${origin}${path}</loc></url>`).join('')}</urlset>\n`);
 console.log('Rendered all six pages with metadata and optimized image attributes.');
-
